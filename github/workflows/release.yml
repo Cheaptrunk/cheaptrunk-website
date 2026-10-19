@@ -1,0 +1,47 @@
+name: Build and release site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}   # it allows to launch it manually also from tab Actions
+
+# Two close pushes don't generate two parallel releases: they got in cue.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write     # only this job it's allowed to write (creating the Release)
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc   # same version on the pc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci        # it installs precisely the versions of package-lock.json
+
+      - name: Build
+        run: npm run build
+
+      - name: Package
+        run: |
+          TAG="site-$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          tar -czf site.tar.gz -C dist .
+          sha256sum site.tar.gz > site.tar.gz.sha256
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" site.tar.gz site.tar.gz.sha256 \
+            --title "$TAG" \
+            --notes "Built from commit $GITHUB_SHA" \
+            --target "$GITHUB_SHA"
+
