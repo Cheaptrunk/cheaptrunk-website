@@ -3,51 +3,71 @@ name: Build and release site
 on:
   push:
     branches: [main]
-  workflow_dispatch: {}   # it allows to launch it manually also from tab Actions
+  workflow_dispatch: {}
 
-# Two close pushes don't generate two parallel releases: they got in cue.
 concurrency:
   group: release
   cancel-in-progress: false
 
+permissions: {}   # default: nessun permesso, ogni job dichiara i suoi
+
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write     # only this job it's allowed to write (creating the Release)
+      contents: read
+    outputs:
+      tag: ${{ steps.package.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
-
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
-          node-version-file: .nvmrc   # same version on the pc
+          node-version-file: .nvmrc
           cache: npm
-
       - name: Install dependencies
-        run: npm ci        # it installs precisely the versions of package-lock.json
-
+        run: npm ci
       - name: Build
         run: npm run build
-
       - name: Package
+        id: package
         run: |
           TAG="site-$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
-          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           tar -czf site.tar.gz -C dist .
           sha256sum site.tar.gz > site.tar.gz.sha256
+      - uses: actions/upload-artifact@v6
+        with:
+          name: site
+          path: |
+            site.tar.gz
+            site.tar.gz.sha256
+          retention-days: 1
+          if-no-files-found: error
 
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ needs.build.outputs.tag }}
+    steps:
+      - uses: actions/download-artifact@v6
+        with:
+          name: site
+      - name: Verify checksum
+        run: sha256sum -c site.tar.gz.sha256
       - name: Publish release
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$TAG" site.tar.gz site.tar.gz.sha256 \
             --title "$TAG" \
             --notes "Built from commit $GITHUB_SHA" \
             --target "$GITHUB_SHA"
-
       - name: Prune old releases (keep last 50)
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           gh release list --limit 1000 --json tagName,createdAt \
             --jq '[.[] | select(.tagName | startswith("site-"))]
@@ -56,4 +76,3 @@ jobs:
             echo "Deleting $tag"
             gh release delete "$tag" --yes --cleanup-tag
           done
-
