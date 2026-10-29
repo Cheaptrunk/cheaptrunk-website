@@ -1,0 +1,28 @@
+---
+// Client-side filter: shows only [data-filter-item] elements whose data-tags contain the picked tag.
+interface Props { tags: string[]; target: string; hash?: boolean }
+const { tags, target, hash = false } = Astro.props;
+---
+<div class="filters" role="group" aria-label="Filter by tag" data-filter={target}>
+  <button class="tag is-on" type="button" data-tag="" aria-pressed="true">all</button>
+  {tags.map((t) => <button class="tag" type="button" data-tag={t} aria-pressed="false">{hash ? `#${t}` : t}</button>)}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-filter]').forEach((group) => {
+    const scope = document.querySelector(group.dataset.filter!);
+    if (!scope) return;
+    group.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-tag]');
+      if (!btn) return;
+      const tag = btn.dataset.tag!;
+      group.querySelectorAll('button').forEach((b) => {
+        b.classList.toggle('is-on', b === btn);
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+      scope.querySelectorAll<HTMLElement>('[data-filter-item]').forEach((item) => {
+        item.hidden = !!tag && !(item.dataset.tags ?? '').split(' ').includes(tag);
+      });
+    });
+  });
+</script>

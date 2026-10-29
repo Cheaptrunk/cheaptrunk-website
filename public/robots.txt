@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cheaptrunk.dev/sitemap-index.xml

@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+---
+<Base title="404">
+  <section class="page-head">
+    <span class="label label--accent">$ kubectl get page</span>
+    <h1 class="page-title">404. Not found.</h1>
+    <p class="page-lead">Error from server (NotFound): this page doesn't exist, or it was rolled back.</p>
+    <div class="actions" style="margin-top:32px"><a class="btn btn--primary" href="/">Back home<Icon name="arrow-left" /></a></div>
+  </section>
+</Base>

@@ -1,16 +1,46 @@
 ---
----
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Terminal from '../components/Terminal.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import PostRow from '../components/PostRow.astro';
+import { getPosts, getProjects } from '../lib/content';
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>CheapTrunk</title>
-	</head>
-	<body>
-		<h1>Welcome to CheapTrunk!</h1>
-	</body>
-</html>
+const projects = (await getProjects()).slice(0, 2);
+const posts = (await getPosts()).slice(0, 3);
+---
+<Base>
+  <section class="hero">
+    <div>
+      <div class="hero__top">
+        <span class="label label--accent">// 01 — home</span>
+        <span class="stamp">Work in progress</span>
+      </div>
+      <h1 class="hero__title">Platform engineer.<br /><span class="mute">Ex lighting tech.</span></h1>
+      <p class="hero__lead">I'm <strong>Enrico Mostacci</strong>. I build Kubernetes platforms, GitOps pipelines and the Terraform underneath them, from Turin.</p>
+      <div class="actions">
+        <a class="btn btn--primary" href="/portfolio">See the work<Icon name="arrow-ne" /></a>
+        <a class="btn btn--ghost" href="/blog">Read the blog<Icon name="arrow-right" /></a>
+      </div>
+    </div>
+    <Terminal lines={[
+      ['cloud', 'azure, gcp, aws, hetzner'],
+      ['k8s', 'aks, gke'],
+      ['iac', 'terraform'],
+      ['gitops', 'argocd'],
+      ['lang', 'python, bash, powershell'],
+      ['based', 'turin, it'],
+    ]} />
+  </section>
+
+  <SectionHead num="02" title="selected work" href="/portfolio" linkLabel="all projects" />
+  <div class="grid-3">
+    {projects.map((p, i) => <ProjectCard project={p} index={i} wide={i === 0} />)}
+  </div>
+
+  <SectionHead num="03" title="latest writing" href="/blog" linkLabel="all posts" />
+  <div class="posts">
+    {posts.map((p) => <PostRow post={p} />)}
+  </div>
+</Base>

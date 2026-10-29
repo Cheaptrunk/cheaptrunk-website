@@ -1,0 +1,71 @@
+/* Design tokens — generated from design/tokens.json. Light is the default; dark follows the OS unless the visitor picks a theme. */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --paper: #f4f5f7;
+  --surface: #ffffff;
+  --rule: #e6e8ec;
+  --line: #d4d8df;
+  --ink: #0b0d12;
+  --ink-muted: #555c6b;
+  --ink-faint: #868c99;
+  --accent: #2a48e8;
+  --accent-tint: #e6eaff;
+  --on-accent: #ffffff;
+  --stamp: #cc3333;
+  --focus: var(--accent);
+  --shadow-pixel: 4px 4px 0 0 #0b0d12;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+  --paper: #0c0e13;
+  --surface: #141720;
+  --rule: #181b23;
+  --line: #2a2f3b;
+  --ink: #eceef3;
+  --ink-muted: #9ba2b0;
+  --ink-faint: #6e7584;
+  --accent: #7f95ff;
+  --accent-tint: #1a2042;
+  --on-accent: #0b0d12;
+  --stamp: #ff7b7b;
+  --focus: var(--accent);
+  --shadow-pixel: 4px 4px 0 0 #7f95ff;
+  }
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0c0e13;
+  --surface: #141720;
+  --rule: #181b23;
+  --line: #2a2f3b;
+  --ink: #eceef3;
+  --ink-muted: #9ba2b0;
+  --ink-faint: #6e7584;
+  --accent: #7f95ff;
+  --accent-tint: #1a2042;
+  --on-accent: #0b0d12;
+  --stamp: #ff7b7b;
+  --focus: var(--accent);
+  --shadow-pixel: 4px 4px 0 0 #7f95ff;
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 96px;
+  --row-pitch: 32px;
+  --radius-0: 0px;
+  --radius-1: 2px;
+  --radius-full: 9999px;
+  --content-max: 1120px;
+  --icon-sm: 14px;
+  --icon-md: 21px;
+  --icon-lg: 28px;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}

@@ -1,0 +1,52 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/inter/800.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '@fontsource/jetbrains-mono/600.css';
+import '../styles/tokens.css';
+import '../styles/site.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../site.config';
+
+interface Props { title?: string; description?: string; glow?: boolean; type?: 'website' | 'article' }
+const { title, description = SITE.description, glow = true, type = 'website' } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.short}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.short} — blog`} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#f4f5f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c0e13" media="(prefers-color-scheme: dark)" />
+    <script is:inline>
+      try { const t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch {}
+    </script>
+  </head>
+  <body>
+    <div class:list={['site', { 'site--glow': glow }]}>
+      <a class="skip" href="#main">skip to content</a>
+      <Nav />
+      <main id="main" class="wrap">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

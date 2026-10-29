@@ -1,0 +1,17 @@
+---
+import Icon from './Icon.astro';
+import { SITE } from '../site.config';
+const year = new Date().getFullYear();
+---
+<footer class="foot">
+  <div class="wrap foot__in">
+    <p class="foot__big"><a href={`mailto:${SITE.email}`} style="text-decoration:none">Let's talk<Icon name="arrow-ne" size="lg" /></a></p>
+    <div class="foot__links">
+      <a href={`mailto:${SITE.email}`}><Icon name="mail" />email</a>
+      <a href={SITE.github}><Icon name="terminal" />github</a>
+      <a href={SITE.linkedin}><Icon name="arrow-ne" />linkedin</a>
+      <a href="/rss.xml"><Icon name="rss" />rss</a>
+    </div>
+    <p class="foot__small">© {year} {SITE.name} · {SITE.location} · built with Astro, served static</p>
+  </div>
+</footer>

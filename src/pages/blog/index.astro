@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import PostRow from '../../components/PostRow.astro';
+import TagFilter from '../../components/TagFilter.astro';
+import { getPosts } from '../../lib/content';
+
+const posts = await getPosts();
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+---
+<Base title="blog" description="Notes from running platforms: what worked, what paged me, what I'd do differently.">
+  <section class="page-head">
+    <span class="label label--accent">// 04 — blog</span>
+    <h1 class="page-title">Blog<Icon name="rss" size="lg" /></h1>
+    <p class="page-lead">Notes from running platforms: what worked, what paged me, what I'd do differently.</p>
+  </section>
+  <TagFilter tags={tags} target="#posts" hash />
+  <div class="posts" id="posts">
+    {posts.length ? posts.map((p) => <PostRow post={p} />) : <p class="empty">Nothing here yet.</p>}
+  </div>
+</Base>
