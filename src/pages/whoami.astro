@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { SITE } from '../site.config';
+
+const facts: [string, string][] = [
+  ['role', 'DevOps / Platform Engineer'],
+  ['based', 'Turin, Italy'],
+  ['cloud', 'Azure, GCP, AWS, Hetzner'],
+  ['platform', 'Kubernetes (GKE, AKS), ArgoCD, GitOps'],
+  ['code', 'Python, Bash, PowerShell'],
+  ['previously', 'Sound & lighting technician'],
+];
+const path = [
+  { when: 'now', title: 'DevOps and Platform engineering', text: 'Kubernetes, Terraform across environments, GitOps with ArgoCD, custom operators in Python.' },
+  { when: 'before', title: 'Automation & CI/CD', text: 'PowerShell automation for SQL Server estates, Bash, build and release pipelines.' },
+  { when: 'earlier', title: 'Sound & lighting', text: 'Desks, rigs and live shows. Where the habit of checking everything twice comes from.' },
+];
+---
+<Base title="whoami" description="Who enrico is: DevOps and platform engineer in Turin, formerly a sound and lighting technician.">
+  <section class="page-head">
+    <span class="label label--accent">$ whoami</span>
+    <h1 class="page-title">Hi, I'm Enrico.<Icon name="plus" size="lg" /></h1>
+  </section>
+
+  <div class="split">
+    <div>
+      <p class="page-lead" style="margin-top:0">I'm a DevOps and platform engineer based in Turin. Most days that means Kubernetes on GKE and AKS, Terraform for everything underneath, and ArgoCD keeping it all honest.</p>
+      <p class="page-lead">Before IT I spent years as a sound and lighting technician. Live shows have no second take, and that's still how I think about production.</p>
+      <div class="actions" style="margin-top:32px">
+        <a class="btn btn--primary" href={SITE.cv} download>Download CV<Icon name="download" /></a>
+        <a class="btn btn--ghost" href={`mailto:${SITE.email}`}>Email me<Icon name="mail" /></a>
+      </div>
+    </div>
+    <dl class="kv">
+      {facts.map(([k, v]) => <Fragment><dt>{k}</dt><dd>{v}</dd></Fragment>)}
+    </dl>
+  </div>
+
+  <SectionHead num="02" title="path so far" />
+  <ol class="timeline">
+    {path.map((p, i) => (
+      <li>
+        <span class:list={['label', { 'label--accent': i === 0 }]}>{p.when}</span>
+        <div><h3>{p.title}</h3><p>{p.text}</p></div>
+      </li>
+    ))}
+  </ol>
+</Base>

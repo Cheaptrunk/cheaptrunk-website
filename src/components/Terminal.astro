@@ -1,0 +1,11 @@
+---
+// Decorative terminal pane for the home hero. Keep the lines factual.
+interface Props { file?: string; command?: string; lines: [string, string][] }
+const { file = '~/enrico/stack.yaml', command = 'cat stack.yaml', lines } = Astro.props;
+const pad = Math.max(...lines.map(([k]) => k.length)) + 2;
+---
+<div class="term">
+  <div class="term__bar" aria-hidden="true"><i></i><i></i><i></i><span class="label">{file}</span></div>
+  <pre class="term__body"><span class="p">$</span> {command}
+{lines.map(([k, v]) => <Fragment><span class="k">{k}:</span>{' '.repeat(pad - k.length)}{v}{'\n'}</Fragment>)}<span class="p">$</span> <span class="cursor"></span></pre>
+</div>

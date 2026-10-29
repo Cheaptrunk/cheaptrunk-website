@@ -1,0 +1,66 @@
+---
+import Icon from './Icon.astro';
+import { NAV, SITE } from '../site.config';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+---
+<header class="nav">
+  <div class="wrap nav__in">
+    <a class="mark" href="/" aria-label={`${SITE.short} — home`}>
+      <span class="mark__disc" aria-hidden="true">e</span>
+      <span>{SITE.short}<span class="mark__mute">.mostacci</span></span>
+    </a>
+    <nav class="nav__links" aria-label="Main">
+      {NAV.map((l) => (
+        <a href={l.href} class:list={{ 'is-active': isActive(l.href) }} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a>
+      ))}
+    </nav>
+    <div class="nav__actions">
+      <button class="icon-btn theme-toggle" type="button" aria-label="Toggle dark mode">
+        <Icon name="moon" class="i-moon" />
+        <Icon name="sun" class="i-sun" />
+      </button>
+      <button class="nav__toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu">
+        <Icon name="menu" size="md" class="i-menu" />
+        <Icon name="close" size="md" class="i-close" />
+      </button>
+    </div>
+  </div>
+  <nav class="sheet" id="menu" aria-label="Main" hidden>
+    <div class="wrap">
+      {NAV.map((l, i) => (
+        <a href={l.href} class:list={{ 'is-active': isActive(l.href) }} aria-current={isActive(l.href) ? 'page' : undefined}>
+          <span><span class="sheet__num">{String(i + 1).padStart(2, '0')}</span>{l.label}</span>
+          <Icon name="arrow-right" size="md" />
+        </a>
+      ))}
+      <div class="sheet__contact">
+        <a href={`mailto:${SITE.email}`}><Icon name="mail" />email</a>
+        <a href={SITE.github}><Icon name="terminal" />github</a>
+        <a href="/rss.xml"><Icon name="rss" />rss</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.nav__toggle');
+  const sheet = document.getElementById('menu');
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    if (sheet) sheet.hidden = open;
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') toggle.click();
+  });
+
+  document.querySelector('.theme-toggle')?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const current = root.dataset.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch {}
+  });
+</script>

@@ -1,0 +1,11 @@
+---
+import Icon from './Icon.astro';
+interface Props { num: string; title: string; href?: string; linkLabel?: string }
+const { num, title, href, linkLabel } = Astro.props;
+---
+<div class="sect">
+  <span class="sect__num">{num}</span>
+  <h2 class="sect__title" style="margin:0">{title}</h2>
+  <span class="sect__rule" aria-hidden="true"></span>
+  {href ? <a class="link" href={href}>{linkLabel}<Icon name="arrow-right" /></a> : <Icon name="plus" />}
+</div>
