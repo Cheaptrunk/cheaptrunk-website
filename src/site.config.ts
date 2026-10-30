@@ -5,7 +5,7 @@ export const SITE = {
   title: 'Enrico Mostacci — Platform engineer',
   description: 'Kubernetes platforms, GitOps pipelines and the Terraform underneath them. Based in Turin.',
   location: 'Turin, IT',
-  email: 'enrico.vex@gmail.com',
+  email: 'hello@cheaptrunk.dev',
   github: 'https://github.com/Cheaptrunk',
   linkedin: 'https://www.linkedin.com/in/enrico-mostacci',
   cv: '/cv.pdf', // TODO: drop the PDF into public/
