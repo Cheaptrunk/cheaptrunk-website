@@ -8,7 +8,7 @@ export const SITE = {
   email: 'hello@cheaptrunk.dev',
   github: 'https://github.com/Cheaptrunk',
   linkedin: 'https://www.linkedin.com/in/enrico-mostacci',
-  cv: '/cv.pdf', // TODO: drop the PDF into public/
+  cv: '/cv.pdf', 
 };
 
 export const NAV = [
