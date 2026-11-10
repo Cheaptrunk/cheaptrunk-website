@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 510" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="title">Cheaptrunk pull-based deploy</title>
+  <desc id="desc">On GitHub: push to main, a build job with a read-only token, a publish job with write access that creates a release with a tarball and its sha256. On the VM: a systemd timer checks for a new release every five minutes, downloads it and verifies the checksum, extracts it next to the previous ones and atomically switches the current symlink. CI never connects to the VM.</desc>
+  <style>
+    .bg{fill:#ffffff}
+    .box{fill:#f5f6f8;stroke:#c8cdd5;stroke-width:1.2}
+    .inner{fill:#ffffff;stroke:#d3d8df;stroke-width:1}
+    .ln{stroke:#8a93a3;stroke-width:1.6;fill:none}
+    .no{stroke:#cf4646;stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+    .x{stroke:#cf4646;stroke-width:2.4;stroke-linecap:round}
+    .h{fill:#1c212b;font-size:15px;font-weight:700}
+    .t{fill:#1c212b;font-size:13.5px;font-weight:600}
+    .s{fill:#596273;font-size:12.5px}
+    .c{text-anchor:middle}
+    .e{text-anchor:end}
+    .num{fill:#2e9e5b}
+    .numt{fill:#ffffff;font-size:11px;font-weight:700;text-anchor:middle}
+    .accent{stroke:#2e9e5b}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#15181d}
+      .box{fill:#1d2128;stroke:#3a414d}
+      .inner{fill:#252a33;stroke:#3f4653}
+      .h,.t{fill:#e7eaef}
+      .s{fill:#a3abb8}
+    }
+  </style>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a93a3"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="840" height="510" rx="14"/>
+
+  <!-- GitHub lane -->
+  <rect class="box" x="20" y="20" width="800" height="178" rx="12"/>
+  <text class="h" x="36" y="45">GitHub · public repository</text>
+
+  <rect class="inner" x="36" y="60" width="178" height="122" rx="8"/>
+  <circle class="num" cx="54" cy="81" r="10"/><text class="numt" x="54" y="85">1</text>
+  <text class="t" x="70" y="86">Push to main</text>
+  <text class="s" x="50" y="112">from my laptop</text>
+  <text class="s" x="50" y="131">force-push blocked</text>
+  <text class="s" x="50" y="150">deletion blocked</text>
+
+  <rect class="inner" x="236" y="60" width="178" height="122" rx="8"/>
+  <circle class="num" cx="254" cy="81" r="10"/><text class="numt" x="254" y="85">2</text>
+  <text class="t" x="270" y="86">Build job</text>
+  <text class="s" x="250" y="112">read-only token</text>
+  <text class="s" x="250" y="131">npm ci + astro build</text>
+  <text class="s" x="250" y="150">token not persisted</text>
+
+  <rect class="inner" x="436" y="60" width="178" height="122" rx="8"/>
+  <circle class="num" cx="454" cy="81" r="10"/><text class="numt" x="454" y="85">3</text>
+  <text class="t" x="470" y="86">Publish job</text>
+  <text class="s" x="450" y="112">write access only here</text>
+  <text class="s" x="450" y="131">no checkout of the code</text>
+  <text class="s" x="450" y="150">tarball + sha256</text>
+
+  <rect class="inner accent" x="636" y="60" width="178" height="122" rx="8"/>
+  <circle class="num" cx="654" cy="81" r="10"/><text class="numt" x="654" y="85">4</text>
+  <text class="t" x="670" y="86">GitHub Release</text>
+  <text class="s" x="650" y="112">tagged by date + commit</text>
+  <text class="s" x="650" y="131">no semver needed</text>
+  <text class="s" x="650" y="150">last 50 kept</text>
+
+  <line class="ln" x1="214" y1="121" x2="233" y2="121" marker-end="url(#arr)"/>
+  <line class="ln" x1="414" y1="121" x2="433" y2="121" marker-end="url(#arr)"/>
+  <line class="ln" x1="614" y1="121" x2="633" y2="121" marker-end="url(#arr)"/>
+
+  <!-- Between lanes -->
+  <line class="ln" x1="725" y1="337" x2="725" y2="185" marker-end="url(#arr)"/>
+  <text class="s e" x="713" y="248">the VM pulls: outbound HTTPS,</text>
+  <text class="s e" x="713" y="267">public API, no token needed</text>
+
+  <line class="no" x1="125" y1="200" x2="125" y2="296"/>
+  <line class="x" x1="116" y1="239" x2="134" y2="257"/>
+  <line class="x" x1="134" y1="239" x2="116" y2="257"/>
+  <text class="s" x="146" y="243">CI never connects to the VM:</text>
+  <text class="s" x="146" y="262">no deploy keys, SSH closed to it</text>
+
+  <!-- VM lane -->
+  <rect class="box" x="20" y="298" width="800" height="178" rx="12"/>
+  <text class="h" x="36" y="323">Hetzner VM</text>
+
+  <rect class="inner accent" x="636" y="338" width="178" height="122" rx="8"/>
+  <circle class="num" cx="654" cy="359" r="10"/><text class="numt" x="654" y="363">5</text>
+  <text class="t" x="670" y="364">systemd timer</text>
+  <text class="s" x="650" y="390">every 5 minutes</text>
+  <text class="s" x="650" y="409">new tag? fetch it</text>
+  <text class="s" x="650" y="428">otherwise: no-op</text>
+
+  <rect class="inner" x="436" y="338" width="178" height="122" rx="8"/>
+  <circle class="num" cx="454" cy="359" r="10"/><text class="numt" x="454" y="363">6</text>
+  <text class="t" x="470" y="364">Download + verify</text>
+  <text class="s" x="450" y="390">tarball + checksum</text>
+  <text class="s" x="450" y="409">sha256 must match,</text>
+  <text class="s" x="450" y="428">or nothing changes</text>
+
+  <rect class="inner" x="236" y="338" width="178" height="122" rx="8"/>
+  <circle class="num" cx="254" cy="359" r="10"/><text class="numt" x="254" y="363">7</text>
+  <text class="t" x="270" y="364">Extract</text>
+  <text class="s" x="250" y="390">into releases/&lt;tag&gt;</text>
+  <text class="s" x="250" y="409">next to the old ones</text>
+
+  <rect class="inner" x="36" y="338" width="178" height="122" rx="8"/>
+  <circle class="num" cx="54" cy="359" r="10"/><text class="numt" x="54" y="363">8</text>
+  <text class="t" x="70" y="364">Atomic switch</text>
+  <text class="s" x="50" y="390">current → new release</text>
+  <text class="s" x="50" y="409">last 3 kept on disk</text>
+  <text class="s" x="50" y="428">rollback = repoint</text>
+
+  <line class="ln" x1="636" y1="399" x2="617" y2="399" marker-end="url(#arr)"/>
+  <line class="ln" x1="436" y1="399" x2="417" y2="399" marker-end="url(#arr)"/>
+  <line class="ln" x1="236" y1="399" x2="217" y2="399" marker-end="url(#arr)"/>
+
+  <text class="s c" x="420" y="497">Caddy serves current → Bunny CDN → visitors</text>
+</svg>
