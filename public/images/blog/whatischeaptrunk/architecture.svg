@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 790" role="img" aria-labelledby="title desc" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="title">Cheaptrunk architecture: one VM, three doors</title>
+  <desc id="desc">Visitors reach the static site through the Bunny.net CDN. Uploaders reach the subtitle form through the same CDN with no caching and a per-IP rate limit. The n8n editor is reachable only through a WireGuard tunnel. Inside the Hetzner firewall, Caddy drops requests without the CDN secret, allows only the form paths, and accepts editor traffic only from the VPN. n8n calls Gemini and Gmail outbound.</desc>
+  <style>
+    .bg{fill:#ffffff}
+    .box{fill:#f5f6f8;stroke:#c8cdd5;stroke-width:1.2}
+    .inner{fill:#ffffff;stroke:#d3d8df;stroke-width:1}
+    .ext{fill:#f5f6f8;stroke:#b5bcc7;stroke-width:1.2;stroke-dasharray:5 4}
+    .fw{fill:none;stroke:#8a93a3;stroke-width:1.4;stroke-dasharray:7 5}
+    .ln{stroke:#8a93a3;stroke-width:1.6;fill:none}
+    .sep{stroke:#d3d8df;stroke-width:1;stroke-dasharray:3 4}
+    .h{fill:#1c212b;font-size:15px;font-weight:700}
+    .t{fill:#1c212b;font-size:13.5px;font-weight:600}
+    .s{fill:#596273;font-size:12.5px}
+    .c{text-anchor:middle}
+    .halo{paint-order:stroke;stroke:#ffffff;stroke-width:6px;stroke-linejoin:round}
+    .haloBox{paint-order:stroke;stroke:#f5f6f8;stroke-width:6px;stroke-linejoin:round}
+    .pill{fill:#ffffff;font-size:12px;font-weight:700;letter-spacing:.08em;text-anchor:middle}
+    .g{fill:#2e9e5b}.a{fill:#c98a10}.r{fill:#cf4646}
+    .gs{stroke:#2e9e5b}.as{stroke:#c98a10}.rs{stroke:#cf4646}
+    @media (prefers-color-scheme: dark){
+      .bg{fill:#15181d}
+      .box{fill:#1d2128;stroke:#3a414d}
+      .inner{fill:#252a33;stroke:#3f4653}
+      .ext{fill:#1d2128;stroke:#4f5765}
+      .sep{stroke:#3f4653}
+      .h,.t{fill:#e7eaef}
+      .s{fill:#a3abb8}
+      .halo{stroke:#15181d}
+      .haloBox{stroke:#1d2128}
+    }
+  </style>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a93a3"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="840" height="790" rx="14"/>
+
+  <!-- Door headers -->
+  <rect class="g" x="40" y="18" width="220" height="26" rx="13"/>
+  <text class="pill" x="150" y="35.5">DOOR 1 · OPEN</text>
+  <rect class="a" x="310" y="18" width="220" height="26" rx="13"/>
+  <text class="pill" x="420" y="35.5">DOOR 2 · AJAR</text>
+  <rect class="r" x="580" y="18" width="220" height="26" rx="13"/>
+  <text class="pill" x="690" y="35.5">DOOR 3 · CLOSED</text>
+
+  <!-- Actors -->
+  <rect class="box gs" x="30" y="58" width="240" height="54" rx="10"/>
+  <text class="t c" x="150" y="81">Visitors</text>
+  <text class="s c" x="150" y="100">anyone, any browser</text>
+  <rect class="box as" x="300" y="58" width="240" height="54" rx="10"/>
+  <text class="t c" x="420" y="81">Anyone with a .srt file</text>
+  <text class="s c" x="420" y="100">…and every scanner online</text>
+  <rect class="box rs" x="570" y="58" width="240" height="54" rx="10"/>
+  <text class="t c" x="690" y="81">Me</text>
+  <text class="s c" x="690" y="100">from my laptop</text>
+
+  <line class="ln" x1="150" y1="112" x2="150" y2="157" marker-end="url(#arr)"/>
+  <line class="ln" x1="420" y1="112" x2="420" y2="157" marker-end="url(#arr)"/>
+  <line class="ln" x1="690" y1="112" x2="690" y2="157" marker-end="url(#arr)"/>
+
+  <!-- Bunny edge -->
+  <rect class="box" x="30" y="160" width="510" height="135" rx="10"/>
+  <text class="h haloBox" x="166" y="182">Bunny.net · EU CDN + DNS (Slovenia)</text>
+  <rect class="inner gs" x="42" y="194" width="226" height="90" rx="8"/>
+  <text class="t" x="56" y="215">Pull zone: site</text>
+  <text class="s" x="56" y="234">HTML cached 3 min</text>
+  <text class="s" x="56" y="252">/_astro/* assets cached 1 year</text>
+  <text class="s" x="56" y="270">www &amp; b-cdn.net → 301 to apex</text>
+  <rect class="inner as" x="302" y="194" width="226" height="90" rx="8"/>
+  <text class="t" x="316" y="215">Pull zone: form</text>
+  <text class="s" x="316" y="234">no caching</text>
+  <text class="s" x="316" y="252">Shield: rate limit per IP</text>
+  <text class="s" x="316" y="270">separate secret from the site</text>
+
+  <!-- WireGuard -->
+  <rect class="box rs" x="570" y="160" width="240" height="135" rx="10"/>
+  <text class="t c" x="690" y="186">WireGuard tunnel</text>
+  <text class="s c" x="690" y="210">key-based, silent to scans</text>
+  <text class="s c" x="690" y="229">split tunnel: only VM traffic</text>
+  <text class="s c" x="690" y="248">the only way to the editor</text>
+  <text class="s c" x="690" y="267">laptop clock in UTC (lesson learned)</text>
+
+  <!-- Edge to origin -->
+  <line class="ln" x1="150" y1="284" x2="150" y2="397" marker-end="url(#arr)"/>
+  <line class="ln" x1="420" y1="284" x2="420" y2="397" marker-end="url(#arr)"/>
+  <line class="ln" x1="690" y1="295" x2="690" y2="397" marker-end="url(#arr)"/>
+  <text class="s" x="160" y="316">+ site secret</text>
+  <text class="s" x="430" y="316">+ form secret</text>
+  <text class="s" x="700" y="316">encrypted tunnel</text>
+
+  <!-- Firewall + VM -->
+  <rect class="fw" x="18" y="328" width="804" height="320" rx="12"/>
+  <text class="s halo" x="34" y="348">Hetzner firewall (Germany) · inbound: SSH from my IPs, CDN origin, certificates, VPN · editor port closed</text>
+  <rect class="box" x="32" y="360" width="776" height="274" rx="10"/>
+  <text class="t haloBox" x="166" y="384">VM · 2 vCPU · 4 GB · Docker Compose</text>
+
+  <!-- Caddy -->
+  <rect class="inner" x="46" y="400" width="748" height="100" rx="8"/>
+  <text class="h" x="60" y="422">Caddy · TLS via Let's Encrypt · decides who gets in</text>
+  <line class="sep" x1="285" y1="434" x2="285" y2="492"/>
+  <line class="sep" x1="555" y1="434" x2="555" y2="492"/>
+  <text class="s c" x="150" y="450">no secret → connection dropped</text>
+  <text class="s c" x="150" y="469">serves the current release</text>
+  <text class="s c" x="420" y="450">no secret → connection dropped</text>
+  <text class="s c" x="420" y="469">only form + webhook paths</text>
+  <text class="s c" x="420" y="488">anything else → 404</text>
+  <text class="s c" x="690" y="450">not from the VPN → dropped</text>
+  <text class="s c" x="690" y="469">proxies to the editor</text>
+
+  <line class="ln" x1="150" y1="500" x2="150" y2="527" marker-end="url(#arr)"/>
+  <line class="ln" x1="420" y1="500" x2="420" y2="527" marker-end="url(#arr)"/>
+  <line class="ln" x1="690" y1="500" x2="690" y2="527" marker-end="url(#arr)"/>
+
+  <!-- Static files -->
+  <rect class="inner gs" x="46" y="530" width="218" height="90" rx="8"/>
+  <text class="t c" x="155" y="553">Static site files</text>
+  <text class="s c" x="155" y="574">releases/&lt;tag&gt; × 3</text>
+  <text class="s c" x="155" y="592">current → newest (symlink)</text>
+  <text class="s c" x="155" y="610">pulled from GitHub Releases</text>
+
+  <!-- n8n -->
+  <rect class="inner" x="296" y="530" width="498" height="90" rx="8"/>
+  <text class="t c" x="545" y="553">n8n · workflow engine</text>
+  <text class="s c" x="420" y="574">form &amp; webhook triggers</text>
+  <text class="s c" x="420" y="592">Code nodes: build requests,</text>
+  <text class="s c" x="420" y="610">split &amp; stitch chunks</text>
+  <text class="s c" x="690" y="574">editor &amp; workflows</text>
+  <text class="s c" x="690" y="592">credentials, encrypted at rest</text>
+  <text class="s c" x="690" y="610">scrapers on a weekly schedule</text>
+
+  <!-- Outbound -->
+  <line class="ln" x1="545" y1="620" x2="545" y2="669" marker-end="url(#arr)"/>
+  <text class="s halo" x="555" y="663">outbound only</text>
+  <rect class="ext" x="296" y="672" width="498" height="96" rx="10"/>
+  <text class="t" x="312" y="697">Outside the EU (for now)</text>
+  <text class="s" x="312" y="720">Gemini Flash-Lite · translation only, hard monthly spending cap</text>
+  <text class="s" x="312" y="740">Gmail · sends translated files and weekly digests</text>
+
+  <!-- Note -->
+  <text class="s" x="40" y="704">Deliberately not shown:</text>
+  <text class="s" x="40" y="723">IPs, ports, origin hostnames,</text>
+  <text class="s" x="40" y="742">secret and header names.</text>
+</svg>
