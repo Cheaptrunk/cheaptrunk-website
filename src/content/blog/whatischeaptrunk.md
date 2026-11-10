@@ -40,11 +40,11 @@ Deploys are pull-based, and this is the part I'm happiest with. When I push to t
 
 A script on the VM checks for new releases every few minutes, verifies the checksum, unpacks the new version next to the old ones, and switches over in one step. Rolling back means pointing at the previous folder. GitHub keeps the last 50 releases and the VM keeps the last three unpacked, which is more than enough history for a personal site.
 
-The important consequence: CI never logs into the server. There are no deploy keys sitting in GitHub that could be stolen, and the server's SSH port is closed to everyone except me. The server reaches out, but nobody reaches in.
+This means CI never logs into the server. There are no deploy keys stored in GitHub that could be stolen, and the server's SSH port is closed to everyone except me. The connection always starts from the server.
 
 ![Pull-based deploy diagram. On GitHub: push to main, a build job with a read-only token, a publish job with write access that creates a release with a tarball and its sha256. On the VM: a systemd timer checks for a new release every five minutes, downloads it and verifies the checksum, extracts it next to the previous ones and atomically switches the current symlink. CI never connects to the VM.](/images/blog/whatischeaptrunk/pull-deploy.svg)
 
-*The server reaches out, nobody reaches in.*
+*GitHub builds and publishes, the VM checks and pulls.*
 
 ## Door two: the subtitle translator form (ajar)
 
@@ -56,15 +56,17 @@ The form lives on its own hostname behind the same Bunny.net CDN, with caching t
 - the origin again only accepts requests carrying the CDN's secret, a different one from the site's;
 - the proxy forwards an explicit allowlist of paths, the form and its webhook, and answers 404 to everything else.
 
-That last point is more than theory. Certificate issuance is public, so a new hostname gets noticed fast: within hours, automated scanners were knocking on paths that don't exist. All they got back was a 404.
+I've seen this happen. Certificates are logged publicly, so a new hostname gets noticed quickly: within hours, automated scanners were requesting paths that don't exist on it, and they all got a 404. With an allowlist I don't have to guess what they'll try next.
 
-Behind the form, n8n does the plumbing. A Code node builds the request and splits large files into chunks, another Code node stitches the translated chunks back together, and n8n's built-in nodes turn the result into a file and send it by email. The AI part is deliberately narrow: Google's Gemini Flash-Lite gets the subtitle text and does one thing: translation. Keeping the model away from the file structure and the logic is a design choice. It makes the workflow predictable, cheap, and easy to debug, because when something breaks I know where to look.
+Behind the form, n8n handles the rest. A Code node builds the request and splits large files into chunks, another Code node stitches the translated chunks back together, and n8n's built-in nodes turn the result into a file and send it by email. Gemini Flash-Lite, Google's model, only receives the subtitle text and translates it. I kept the file structure and the logic out of the model on purpose: the workflow is more predictable and cheaper this way, and when something breaks I know where to look.
+
+How I shaped this automation around what I actually needed deserves a post of its own, and it's coming next.
 
 ## Door three: the n8n dashboard (closed)
 
 The n8n editor is where the workflows and their credentials live. It's the most sensitive thing on the box, so from the outside it simply doesn't exist: the port is closed at the provider's firewall.
 
-The only way in is a WireGuard tunnel from my computer. WireGuard is silent to anyone without a valid key, so its port gives nothing away to a scan. I chose it over a solution like Tailscale because I wanted full control over the VPN and no third-party coordination service in the middle.
+The only way in is a WireGuard tunnel from my computer. WireGuard is silent to anyone without a valid key, so its port gives nothing away to a scan. I chose it over Tailscale because I wanted full control over the VPN and no third-party coordination service in the middle.
 
 There's a second lock behind the first. Even if someone reopened that firewall port by mistake, the proxy itself refuses any request that doesn't come from inside the VPN.
 
@@ -72,9 +74,9 @@ The editor is also the one thing that isn't behind the CDN. I tried: its live up
 
 ## Things that broke
 
-A setup like this teaches you mostly through its failures. Here's what I've learned so far.
+I learned a lot from what went wrong. Two incidents in particular stuck with me.
 
-**The Google OAuth app that expired every week.** The automations send email through a Google account, and the connection kept dying every seven days. Always seven, never six or eight, and that's what made me suspect the problem was on my side rather than some random glitch. It was: digging through Google's documentation, I found that an OAuth app left in "Testing" mode gets refresh tokens that expire after a week. I went through the publishing steps, reconnected the account, and it hasn't happened since.
+**The Google OAuth app that expired every week.** The automations send email through a Google account, and the connection kept dying every seven days. It always happened after exactly seven days, which made me think the cause was on my side rather than a random error. Digging through Google's documentation, I found that an OAuth app left in "Testing" mode gets refresh tokens that expire after a week. I went through the publishing steps, reconnected the account, and it hasn't happened since.
 
 **The hour that broke the VPN.** The week after the switch from summer time, the editor stopped loading. The tunnel was up, nothing in the logs. For a moment or two I was lost, then I decided to look at the state of the tunnel:
 
@@ -83,7 +85,7 @@ sudo systemctl status wg-quick@wg0 --no-pager
 sudo wg show | grep -E 'handshake|transfer'
 ```
 
-The service was active, but `wg show` had something to say:
+The service was active, but `wg show` printed this:
 
 ```text
   latest handshake: (System clock wound backward; connection problems may ensue.)
